@@ -1,7 +1,7 @@
 const config: Record<number, { bg: string; text: string; ring: string }> = {
-  1: { bg: "bg-medal-gold-bg", text: "text-amber-700", ring: "ring-medal-gold/30" },
-  2: { bg: "bg-medal-silver-bg", text: "text-ink-600", ring: "ring-medal-silver/30" },
-  3: { bg: "bg-medal-bronze-bg", text: "text-amber-800", ring: "ring-medal-bronze/30" },
+  1: { bg: "bg-medal-gold-bg", text: "text-amber-700", ring: "ring-medal-gold/50" },
+  2: { bg: "bg-medal-silver-bg", text: "text-ink-700", ring: "ring-medal-silver/50" },
+  3: { bg: "bg-medal-bronze-bg", text: "text-amber-800", ring: "ring-medal-bronze/50" },
 };
 
 export function PlacingBadge({ placing, size = "md" }: { placing: number | null; size?: "sm" | "md" | "lg" }) {
@@ -13,7 +13,7 @@ export function PlacingBadge({ placing, size = "md" }: { placing: number | null;
   if (style) {
     return (
       <span
-        className={`inline-flex items-center justify-center rounded-full font-heading font-semibold tabular-nums ring-1 ${dims} ${style.bg} ${style.text} ${style.ring}`}
+        className={`inline-flex items-center justify-center rounded-full font-heading font-bold tabular-nums ring-2 ${dims} ${style.bg} ${style.text} ${style.ring}`}
       >
         {placing}
       </span>
@@ -21,7 +21,7 @@ export function PlacingBadge({ placing, size = "md" }: { placing: number | null;
   }
 
   return (
-    <span className={`inline-flex items-center justify-center font-heading font-medium tabular-nums text-ink-400 ${dims}`}>
+    <span className={`inline-flex items-center justify-center rounded-full font-heading font-semibold tabular-nums text-ink-500 bg-ink-100 ${dims}`}>
       {placing}
     </span>
   );
