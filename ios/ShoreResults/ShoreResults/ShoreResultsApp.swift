@@ -2,7 +2,7 @@ import SwiftUI
 import ShoreKit
 
 @main
-struct ShoreResultsApp: App {
+struct TidesResultsApp: App {
     @State private var appState = ResultsAppState()
 
     var body: some Scene {

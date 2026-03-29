@@ -1,7 +1,7 @@
 import Foundation
 import GRDB
 
-public final class ShoreDatabase: Sendable {
+public final class TidesDatabase: Sendable {
     private let dbQueue: DatabaseQueue
 
     public init(path: String) throws {

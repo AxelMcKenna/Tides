@@ -2,9 +2,9 @@ import XCTest
 import GRDB
 @testable import ShoreKit
 
-final class ShoreDatabaseTests: XCTestCase {
+final class TidesDatabaseTests: XCTestCase {
     func testCreateInMemoryDatabase() throws {
-        let db = try ShoreDatabase()
+        let db = try TidesDatabase()
         let count = try db.read { db in
             try Carnival.fetchCount(db)
         }
@@ -12,7 +12,7 @@ final class ShoreDatabaseTests: XCTestCase {
     }
 
     func testInsertAndFetchCarnival() throws {
-        let db = try ShoreDatabase()
+        let db = try TidesDatabase()
         let carnival = Carnival(
             id: UUID(),
             name: "Test Carnival",
@@ -33,7 +33,7 @@ final class ShoreDatabaseTests: XCTestCase {
     }
 
     func testInsertFullHierarchy() throws {
-        let db = try ShoreDatabase()
+        let db = try TidesDatabase()
 
         let carnival = Carnival(id: UUID(), name: "Test", hostingClubId: UUID(), sanction: "Club", startDate: "2026-04-11", endDate: "2026-04-11")
         let club = Club(id: UUID(), branchId: UUID(), name: "Test Club", abbreviation: "TST")
@@ -61,7 +61,7 @@ final class ShoreDatabaseTests: XCTestCase {
     }
 
     func testSyncQueue() throws {
-        let db = try ShoreDatabase()
+        let db = try TidesDatabase()
 
         let item = SyncQueueItem(type: "RecordResult", payload: "{\"test\": true}")
         try db.write { db in

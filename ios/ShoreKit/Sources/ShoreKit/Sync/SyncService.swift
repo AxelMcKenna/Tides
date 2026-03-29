@@ -3,12 +3,12 @@ import GRDB
 import Network
 
 public actor SyncService {
-    private let db: ShoreDatabase
+    private let db: TidesDatabase
     private let api: APIClient
     private let monitor: NWPathMonitor
     private var isConnected = false
 
-    public init(db: ShoreDatabase, api: APIClient) {
+    public init(db: TidesDatabase, api: APIClient) {
         self.db = db
         self.api = api
         self.monitor = NWPathMonitor()
@@ -21,7 +21,7 @@ public actor SyncService {
                 await self.handleConnectivityChange(path.status == .satisfied)
             }
         }
-        monitor.start(queue: DispatchQueue(label: "nz.shore.sync.monitor"))
+        monitor.start(queue: DispatchQueue(label: "nz.tides.sync.monitor"))
     }
 
     public func stopMonitoring() {
