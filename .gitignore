@@ -1,0 +1,63 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.dll
+*.exe
+*.pdb
+
+## NuGet
+*.nupkg
+**/packages/*
+*.nuget.props
+*.nuget.targets
+
+## Rider
+.idea/
+
+## VS Code
+.vscode/
+
+## OS
+.DS_Store
+Thumbs.db
+
+## User secrets
+secrets.json
+
+## Environment
+.env
+*.local
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+
+## Test results
+TestResults/
+coverage/
+
+## Node / Next.js
+node_modules/
+.next/
+out/
+tsconfig.tsbuildinfo
+
+## Swift
+.build/
+.swiftpm/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.playground/timeline.xctimeline
+
+## Python cache
+__pycache__/
+*.pyc
