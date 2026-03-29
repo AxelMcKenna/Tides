@@ -1,0 +1,170 @@
+@import "tailwindcss";
+
+@theme {
+  /* --- Colors: Tide (primary — navy) --- */
+  --color-tide-950: #0A0F1A;
+  --color-tide-900: #101828;
+  --color-tide-800: #182035;
+  --color-tide-700: #1E2D4A;
+  --color-tide-600: #2B4068;
+  --color-tide-500: #3B5998;
+  --color-tide-400: #5B7FBF;
+  --color-tide-300: #8BA6D6;
+  --color-tide-200: #BCCCE8;
+  --color-tide-100: #DDE6F3;
+  --color-tide-50:  #F0F4F9;
+
+  /* --- Colors: Ink (neutrals) --- */
+  --color-ink-950: #090F14;
+  --color-ink-900: #0F1923;
+  --color-ink-800: #1A2835;
+  --color-ink-700: #2D3E4A;
+  --color-ink-600: #465A68;
+  --color-ink-500: #587080;
+  --color-ink-400: #7B95A5;
+  --color-ink-300: #9BB2BF;
+  --color-ink-200: #C4D3DB;
+  --color-ink-100: #E2EAEE;
+  --color-ink-50:  #F3F6F8;
+
+  /* --- Colors: Signal (semantic) --- */
+  --color-signal-green: #0F9D58;
+  --color-signal-amber: #E6A817;
+  --color-signal-red:   #D93025;
+  --color-signal-blue:  #4285F4;
+
+  /* --- Colors: Medal (placing badges) --- */
+  --color-medal-gold:       #F5C518;
+  --color-medal-gold-bg:    #FEF9E7;
+  --color-medal-silver:     #8C9BAA;
+  --color-medal-silver-bg:  #F0F2F4;
+  --color-medal-bronze:     #B87333;
+  --color-medal-bronze-bg:  #FBF3EB;
+
+  /* --- Colors: Display mode --- */
+  --color-display-bg:   #080C16;
+  --color-display-card: #0F1526;
+  --color-display-edge: #171F34;
+
+  /* --- Colors: Live indicator --- */
+  --color-live: #EF4444;
+
+  /* --- Typography --- */
+  --font-heading: 'DM Sans', sans-serif;
+  --font-body:    'Geist', sans-serif;
+  --font-data:    'Geist Mono', monospace;
+  --font-mono:    'Geist Mono', monospace;
+
+  /* --- Border radius --- */
+  --radius-xs:  3px;
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-card:  0 1px 2px rgba(10, 25, 35, 0.05), 0 4px 16px rgba(10, 25, 35, 0.06);
+  --shadow-float: 0 4px 24px rgba(10, 25, 35, 0.12), 0 1px 3px rgba(10, 25, 35, 0.08);
+  --shadow-glow:  0 0 20px rgba(59, 89, 152, 0.15);
+
+  /* --- Transitions --- */
+  --duration-fast:     120ms;
+  --duration-standard: 200ms;
+  --duration-slow:     350ms;
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Placing row highlight on hover --- */
+.result-row {
+  transition: background-color var(--duration-fast) ease;
+}
+.result-row:hover {
+  background-color: var(--color-tide-50);
+}
+
+/* --- Heat card --- */
+.heat-card {
+  transition: box-shadow var(--duration-standard) ease, transform var(--duration-standard) ease;
+}
+.heat-card:hover {
+  box-shadow: var(--shadow-float);
+  transform: translateY(-1px);
+}
+
+/* --- Tab underline animation --- */
+.tab-active {
+  position: relative;
+}
+.tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-tide-500);
+  border-radius: 1px 1px 0 0;
+  animation: tab-in var(--duration-standard) ease;
+}
+@keyframes tab-in {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* --- Live pulse --- */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.live-dot {
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+/* --- Stagger animation for lists --- */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up var(--duration-slow) ease both;
+}
+
+/* --- Display mode slide transition --- */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.animate-slide-in {
+  animation: slide-in var(--duration-slow) ease both;
+}
+
+/* --- Number tabular figures --- */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
