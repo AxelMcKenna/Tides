@@ -22,8 +22,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shore — Live Results",
-  description: "Surf Life Saving competition results — live heat draws, placings, and club standings.",
+  title: "Tides — Live Results",
+  description: "Surf Life Saving competition results — live heat draws, placings and club standings.",
 };
 
 export const viewport: Viewport = {

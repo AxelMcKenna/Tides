@@ -8,26 +8,36 @@ namespace Tides.Core.Tests;
 public class DomainTests
 {
     [Fact]
-    public void Member_GetAgeGroup_13YearOld_ReturnsU14()
+    public void Member_GetAgeGroup_14YearOld_ReturnsU15()
     {
         var member = new Member(Guid.NewGuid(), Guid.NewGuid(), "Test", "Member",
-            new DateOnly(2013, 1, 15), Gender.Male);
+            new DateOnly(2012, 3, 29), Gender.Male);
 
-        var ageGroup = member.GetAgeGroup(new DateOnly(2026, 3, 29));
-
-        Assert.Equal(AgeGroup.U14, ageGroup);
-    }
-
-    [Fact]
-    public void Member_GetAgeGroup_Exactly14OnReferenceDate_ReturnsU15()
-    {
-        var member = new Member(Guid.NewGuid(), Guid.NewGuid(), "Test", "Member",
-            new DateOnly(2012, 3, 29), Gender.Female);
-
-        // On their 14th birthday
         var ageGroup = member.GetAgeGroup(new DateOnly(2026, 3, 29));
 
         Assert.Equal(AgeGroup.U15, ageGroup);
+    }
+
+    [Fact]
+    public void Member_GetAgeGroup_16YearOld_ReturnsU17()
+    {
+        var member = new Member(Guid.NewGuid(), Guid.NewGuid(), "Test", "Member",
+            new DateOnly(2010, 1, 15), Gender.Female);
+
+        var ageGroup = member.GetAgeGroup(new DateOnly(2026, 3, 29));
+
+        Assert.Equal(AgeGroup.U17, ageGroup);
+    }
+
+    [Fact]
+    public void Member_GetAgeGroup_18YearOld_ReturnsU19()
+    {
+        var member = new Member(Guid.NewGuid(), Guid.NewGuid(), "Test", "Member",
+            new DateOnly(2008, 1, 15), Gender.Male);
+
+        var ageGroup = member.GetAgeGroup(new DateOnly(2026, 3, 29));
+
+        Assert.Equal(AgeGroup.U19, ageGroup);
     }
 
     [Fact]
@@ -84,7 +94,7 @@ public class DomainTests
     public void Carnival_AdjudicateProtest_RaisesProtestAdjudicatedEvent()
     {
         var carnival = new Carnival(Guid.NewGuid(), "Test", Guid.NewGuid(),
-            SanctionLevel.Branch, new DateOnly(2026, 3, 29), new DateOnly(2026, 3, 29));
+            SanctionLevel.Regional, new DateOnly(2026, 3, 29), new DateOnly(2026, 3, 29));
 
         var protest = carnival.LodgeProtest(Guid.NewGuid(), null, Guid.NewGuid(), "Wrong placing");
         carnival.AdjudicateProtest(protest.Id, ProtestStatus.Upheld, "Review confirmed error");
@@ -130,10 +140,10 @@ public class DomainTests
         out Guid eventId, out Guid roundId, out Guid heatId, out Guid entryId)
     {
         var carnival = new Carnival(Guid.NewGuid(), "Test Carnival", Guid.NewGuid(),
-            SanctionLevel.Branch, new DateOnly(2026, 3, 29), new DateOnly(2026, 3, 29));
+            SanctionLevel.Regional, new DateOnly(2026, 3, 29), new DateOnly(2026, 3, 29));
 
-        var eventDef = new EventDefinition(Guid.NewGuid(), "U14 Sprint", EventCategory.Sprint,
-            AgeGroup.U14, Gender.Male, 4);
+        var eventDef = new EventDefinition(Guid.NewGuid(), "U15 Sprint", EventCategory.Sprint,
+            AgeGroup.U15, Gender.Male, 4);
         carnival.AddEvent(eventDef);
         eventId = eventDef.Id;
 

@@ -20,11 +20,14 @@ export default async function CarnivalOverview({
     api.getLeaderboard(id),
   ]);
 
+  const today = new Date().toISOString().split("T")[0];
+  const isLive = carnival.startDate <= today && carnival.endDate >= today;
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       {/* Left column: Events */}
       <div className="lg:col-span-2 space-y-4">
-        <EventExplorer events={carnival.events} carnivalId={id} />
+        <EventExplorer events={carnival.events} carnivalId={id} isLive={isLive} />
       </div>
 
       {/* Right column: Standings + QR */}
@@ -46,7 +49,7 @@ export default async function CarnivalOverview({
               {leaderboard.standings.slice(0, 5).map((s) => (
                 <div key={s.clubId} className="flex items-center justify-between px-4 py-2.5 border-b border-ink-100/60 last:border-0">
                   <div className="flex items-center gap-3">
-                    <span className={`font-heading font-bold tabular-nums w-5 text-center ${rankColors[s.rank] ?? "text-ink-300"}`}>
+                    <span className={`font-heading font-bold tabular-nums w-5 text-center ${rankColors[s.rank] ?? "text-tide-800"}`}>
                       {s.rank}
                     </span>
                     <span className="text-sm font-heading font-semibold text-ink-900">{s.clubName}</span>
@@ -60,12 +63,14 @@ export default async function CarnivalOverview({
           </section>
         )}
 
-        <div className="bg-white rounded-[--radius-lg] border border-ink-200 shadow-card p-5 flex flex-col items-center">
-          <p className="text-xs font-heading font-medium uppercase tracking-wider text-ink-500 mb-3">
+        <div className="bg-tide-900 rounded-[--radius-lg] shadow-card p-5 flex flex-col items-center">
+          <p className="text-[10px] font-heading font-bold uppercase tracking-[0.2em] text-tide-400 mb-3">
             Share Results
           </p>
-          <CarnivalQR carnivalId={id} />
-          <p className="text-xs text-ink-500 mt-3">Scan to view live results</p>
+          <div className="bg-white rounded-[--radius-md] p-3">
+            <CarnivalQR carnivalId={id} />
+          </div>
+          <p className="text-[11px] text-tide-400 mt-3 font-heading">Scan for live results</p>
         </div>
       </div>
     </div>

@@ -4,7 +4,6 @@ public enum SanctionLevel
 {
     None,
     Club,
-    Branch,
-    State,
+    Regional,
     National
 }
