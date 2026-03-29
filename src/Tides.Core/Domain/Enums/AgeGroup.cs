@@ -2,18 +2,8 @@ namespace Tides.Core.Domain.Enums;
 
 public enum AgeGroup
 {
-    U8,
-    U9,
-    U10,
-    U11,
-    U12,
-    U13,
-    U14,
     U15,
     U17,
-    Open,
-    Masters30,
-    Masters40,
-    Masters50,
-    Masters60
+    U19,
+    Open
 }
