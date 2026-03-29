@@ -9,8 +9,7 @@ public class TidesDbContext : DbContext
 
     public DbSet<Organisation> Organisations => Set<Organisation>();
     public DbSet<Region> Regions => Set<Region>();
-    public DbSet<Branch> Branches => Set<Branch>();
-    public DbSet<Club> Clubs => Set<Club>();
+public DbSet<Club> Clubs => Set<Club>();
     public DbSet<Member> Members => Set<Member>();
     public DbSet<Carnival> Carnivals => Set<Carnival>();
     public DbSet<EventDefinition> Events => Set<EventDefinition>();

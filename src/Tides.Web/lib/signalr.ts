@@ -13,15 +13,21 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5266";
 
 export type ConnectionStatus = "connecting" | "connected" | "reconnecting" | "disconnected";
 
+export type SignalRState = {
+  status: ConnectionStatus;
+  lastEvent: number | null;
+};
+
 export type SignalRHandlers = {
   ResultRecorded?: (result: ResultResponse) => void;
   ResultCorrected?: (result: ResultResponse) => void;
   LeaderboardUpdated?: (leaderboard: LeaderboardResponse) => void;
 };
 
-export function useSignalR(carnivalId: string, handlers: SignalRHandlers) {
+export function useSignalR(carnivalId: string, handlers: SignalRHandlers): SignalRState {
   const connectionRef = useRef<HubConnection | null>(null);
   const [status, setStatus] = useState<ConnectionStatus>("connecting");
+  const [lastEvent, setLastEvent] = useState<number | null>(null);
 
   useEffect(() => {
     const connection = new HubConnectionBuilder()
@@ -33,7 +39,12 @@ export function useSignalR(carnivalId: string, handlers: SignalRHandlers) {
     connectionRef.current = connection;
 
     for (const [event, handler] of Object.entries(handlers)) {
-      if (handler) connection.on(event, handler as (...args: unknown[]) => void);
+      if (handler) {
+        connection.on(event, (...args: unknown[]) => {
+          setLastEvent(Date.now());
+          (handler as (...a: unknown[]) => void)(...args);
+        });
+      }
     }
 
     connection.onreconnecting(() => setStatus("reconnecting"));
@@ -55,5 +66,5 @@ export function useSignalR(carnivalId: string, handlers: SignalRHandlers) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [carnivalId]);
 
-  return status;
+  return { status, lastEvent };
 }

@@ -11,11 +11,11 @@ using Tides.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace Tides.Infrastructure.Persistence.Migrations
+namespace Tides.Infrastructure.Migrations
 {
     [DbContext(typeof(TidesDbContext))]
-    [Migration("20260329000604_EntryEventAssignment")]
-    partial class EntryEventAssignment
+    [Migration("20260329061711_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,27 +26,6 @@ namespace Tides.Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Tides.Core.Domain.Branch", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<Guid>("RegionId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RegionId");
-
-                    b.ToTable("branches", (string)null);
-                });
 
             modelBuilder.Entity("Tides.Core.Domain.Carnival", b =>
                 {
@@ -91,17 +70,17 @@ namespace Tides.Infrastructure.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
-                    b.Property<Guid>("BranchId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<Guid>("RegionId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BranchId");
+                    b.HasIndex("RegionId");
 
                     b.ToTable("clubs", (string)null);
                 });
@@ -199,6 +178,9 @@ namespace Tides.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("HeatNumber")
                         .HasColumnType("integer");

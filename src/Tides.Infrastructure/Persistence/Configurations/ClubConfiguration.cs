@@ -13,6 +13,6 @@ public class ClubConfiguration : IEntityTypeConfiguration<Club>
         builder.Property(c => c.Name).HasMaxLength(200).IsRequired();
         builder.Property(c => c.Abbreviation).HasMaxLength(20).IsRequired();
 
-        builder.HasIndex(c => c.BranchId);
+        builder.HasIndex(c => c.RegionId);
     }
 }
