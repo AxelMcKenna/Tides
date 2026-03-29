@@ -37,7 +37,7 @@ export function CarnivalSearch({ carnivals }: { carnivals: CarnivalItem[] }) {
       {/* Search */}
       <div className="relative">
         <svg
-          className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400"
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -54,7 +54,7 @@ export function CarnivalSearch({ carnivals }: { carnivals: CarnivalItem[] }) {
           placeholder="Search carnivals..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-white rounded-[--radius-md] border border-ink-200/60 pl-11 pr-4 py-3 text-sm font-body text-ink-900 placeholder:text-ink-400 shadow-card focus:outline-none focus:ring-2 focus:ring-tide-500/30 focus:border-tide-500 transition-all"
+          className="w-full bg-white rounded-[--radius-md] border border-ink-200 pl-10 pr-4 py-2.5 min-h-[44px] text-sm text-ink-900 placeholder:text-ink-400 shadow-card focus:outline-none focus:ring-2 focus:ring-tide-500/20 focus:border-tide-500 transition-all"
         />
       </div>
 

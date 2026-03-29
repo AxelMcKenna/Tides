@@ -47,6 +47,7 @@ export interface HeatResultsResponse {
   heatNumber: number;
   roundType: string;
   isComplete: boolean;
+  completedAt: string | null;
   results: ResultResponse[];
 }
 
@@ -61,6 +62,7 @@ export interface ResultResponse {
   clubId: string;
   clubName: string;
   members: MemberBriefResponse[];
+  points: number | null;
 }
 
 export interface DrawResponse {

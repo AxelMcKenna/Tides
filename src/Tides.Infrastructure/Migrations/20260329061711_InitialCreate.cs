@@ -5,7 +5,7 @@ using Tides.Core.Domain.ValueObjects;
 
 #nullable disable
 
-namespace Tides.Infrastructure.Persistence.Migrations
+namespace Tides.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -13,19 +13,6 @@ namespace Tides.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "branches",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    RegionId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_branches", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "carnivals",
                 columns: table => new
@@ -47,7 +34,7 @@ namespace Tides.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    BranchId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RegionId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Abbreviation = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false)
                 },
@@ -200,7 +187,8 @@ namespace Tides.Infrastructure.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     RoundId = table.Column<Guid>(type: "uuid", nullable: false),
                     HeatNumber = table.Column<int>(type: "integer", nullable: false),
-                    IsComplete = table.Column<bool>(type: "boolean", nullable: false)
+                    IsComplete = table.Column<bool>(type: "boolean", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -218,7 +206,8 @@ namespace Tides.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    HeatId = table.Column<Guid>(type: "uuid", nullable: false),
+                    HeatId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EventDefinitionId = table.Column<Guid>(type: "uuid", nullable: false),
                     ClubId = table.Column<Guid>(type: "uuid", nullable: false),
                     MemberIds = table.Column<string>(type: "jsonb", nullable: false),
                     Lane = table.Column<int>(type: "integer", nullable: true),
@@ -232,7 +221,7 @@ namespace Tides.Infrastructure.Persistence.Migrations
                         column: x => x.HeatId,
                         principalTable: "heats",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -260,24 +249,24 @@ namespace Tides.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_branches_RegionId",
-                table: "branches",
-                column: "RegionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_carnivals_HostingClubId",
                 table: "carnivals",
                 column: "HostingClubId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_clubs_BranchId",
+                name: "IX_clubs_RegionId",
                 table: "clubs",
-                column: "BranchId");
+                column: "RegionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_entries_ClubId",
                 table: "entries",
                 column: "ClubId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_entries_EventDefinitionId",
+                table: "entries",
+                column: "EventDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_entries_HeatId",
@@ -351,9 +340,6 @@ namespace Tides.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "branches");
-
             migrationBuilder.DropTable(
                 name: "clubs");
 

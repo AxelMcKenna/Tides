@@ -4,13 +4,15 @@ Live results and competition management for surf lifesaving carnivals.
 
 ## Stack
 
-| Layer | Tech |
-|-------|------|
-| API | .NET 10, ASP.NET Core, EF Core, SignalR |
-| Web | Next.js 16, React 19, Tailwind CSS 4, TypeScript |
-| iOS | Swift, SwiftUI, GRDB (offline-first SQLite) |
-| Database | PostgreSQL 16 |
-| CI | GitHub Actions |
+![.NET](https://img.shields.io/badge/.NET_10-512BD4?logo=dotnet&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js_16-000000?logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=black)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?logo=tailwindcss&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Swift](https://img.shields.io/badge/Swift-F05138?logo=swift&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL_16-4169E1?logo=postgresql&logoColor=white)
+![SignalR](https://img.shields.io/badge/SignalR-512BD4?logo=dotnet&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
 
 ## Project Structure
 

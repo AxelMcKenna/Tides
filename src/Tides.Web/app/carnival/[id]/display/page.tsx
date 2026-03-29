@@ -82,7 +82,7 @@ export default function DisplayPage() {
     return (
       <div className="h-screen w-screen bg-display-bg flex flex-col items-center justify-center gap-6">
         <div className="text-center">
-          <h1 className="text-5xl font-heading font-bold text-white uppercase tracking-[0.3em]">Shore</h1>
+          <h1 className="text-5xl font-heading font-bold text-white uppercase tracking-[0.3em]">Tides</h1>
           <p className="text-tide-400/60 text-sm font-heading mt-2 uppercase tracking-[0.2em]">Live Results</p>
         </div>
         <div className="flex items-center gap-3">
@@ -135,7 +135,7 @@ export default function DisplayPage() {
       {/* Bottom bar */}
       <div className="shrink-0 px-10 py-4 flex items-center justify-between border-t border-white/5">
         <span className="text-[11px] font-heading font-semibold uppercase tracking-[0.3em] text-white/20">
-          Shore
+          Tides
         </span>
         <div className="flex gap-2">
           {(["leaderboard", "results"] as const).map((slide) => (

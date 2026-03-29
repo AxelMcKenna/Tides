@@ -94,6 +94,7 @@ public class CarnivalService(
                 .ThenInclude(e => e.Rounds)
                     .ThenInclude(r => r.Heats)
                         .ThenInclude(h => h.Entries)
+            .Include(c => c.PointsTable)
             .AsNoTracking();
 
         var carnival = await query.FirstOrDefaultAsync(c => c.Id == carnivalId)
@@ -125,17 +126,26 @@ public class CarnivalService(
             .AsNoTracking()
             .ToDictionaryAsync(c => c.Id);
 
+        var pointsLookup = carnival.PointsTable?.Entries
+            .ToDictionary(p => p.Placing, p => p.Points);
+
         return new CarnivalResultsResponse(carnivalId, events.Select(e =>
-            new EventResultsResponse(e.Id, e.Name, e.AgeGroup.ToString(), e.Gender.ToString(),
+        {
+            var finalRoundNumber = e.Rounds.Max(r => r.RoundNumber);
+            return new EventResultsResponse(e.Id, e.Name, e.AgeGroup.ToString(), e.Gender.ToString(),
                 e.Rounds.SelectMany(r => r.Heats.Select(h =>
-                    new HeatResultsResponse(h.Id, h.HeatNumber, r.Type.ToString(), h.IsComplete,
+                    new HeatResultsResponse(h.Id, h.HeatNumber, r.Type.ToString(), h.IsComplete, h.CompletedAt,
                         h.Results.Select(res =>
                         {
                             var entry = h.Entries.FirstOrDefault(en => en.Id == res.EntryId);
-                            return MapResult(res, entry, members, clubs);
+                            var isFinal = r.RoundNumber == finalRoundNumber;
+                            decimal? points = isFinal && res.Placing is { } placing && pointsLookup != null
+                                ? pointsLookup.GetValueOrDefault(placing.Position)
+                                : null;
+                            return MapResult(res, entry, members, clubs, points);
                         }).ToList())
-                )).ToList())
-        ).ToList());
+                )).ToList());
+        }).ToList());
     }
 
     public async Task<LeaderboardResponse> GetLeaderboardAsync(Guid carnivalId, string? ageGroup = null)
@@ -511,14 +521,15 @@ public class CarnivalService(
             )).ToList());
 
     private static ResultResponse MapResult(Result r, Entry? entry,
-        Dictionary<Guid, Member> members, Dictionary<Guid, Club> clubs) =>
+        Dictionary<Guid, Member> members, Dictionary<Guid, Club> clubs, decimal? points = null) =>
         new(r.Id, r.HeatId, r.EntryId, r.Placing?.Position, r.Time?.Time,
             r.JudgeScore, r.Status.ToString(),
             entry?.ClubId ?? Guid.Empty,
             entry != null && clubs.TryGetValue(entry.ClubId, out var club) ? club.Name : "Unknown",
             entry?.MemberIds.Select(id => members.TryGetValue(id, out var m)
                 ? new MemberBriefResponse(m.Id, m.FirstName, m.LastName)
-                : new MemberBriefResponse(id, "Unknown", "")).ToList() ?? []);
+                : new MemberBriefResponse(id, "Unknown", "")).ToList() ?? [],
+            points);
 
     private static ProtestResponse MapProtest(Protest p) =>
         new(p.Id, p.CarnivalId, p.EventId, p.HeatId, p.LodgedByClubId,
