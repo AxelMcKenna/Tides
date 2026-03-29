@@ -2,7 +2,8 @@ namespace Tides.Api.Dtos;
 
 public record LeaderboardResponse(
     Guid CarnivalId,
-    List<ClubStandingResponse> Standings);
+    List<ClubStandingResponse> Standings,
+    string? Checksum = null);
 
 public record ClubStandingResponse(
     int Rank,

@@ -11,12 +11,30 @@ namespace Tides.Api.Services;
 
 public class SyncService(TidesDbContext db, IHubContext<ResultsHub> hubContext) : ISyncService
 {
+    private const int MaxBatchSize = 50;
+
     public async Task<SyncBatchResponse> ProcessBatchAsync(SyncBatchRequest request)
     {
+        if (request.Events.Count > MaxBatchSize)
+            throw new InvalidOperationException(
+                $"Batch size {request.Events.Count} exceeds maximum of {MaxBatchSize}.");
+
+        // Verify carnival exists and is active
+        var carnival = await db.Carnivals
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == request.CarnivalId);
+
+        if (carnival == null)
+            throw new KeyNotFoundException($"Carnival {request.CarnivalId} not found.");
+
+        if (carnival.Status != CarnivalStatus.Active)
+            throw new InvalidOperationException(
+                $"Carnival {request.CarnivalId} is not active (status: {carnival.Status}).");
+
         var acknowledged = new List<SyncEventAck>();
         var conflicts = new List<SyncEventConflict>();
         var errors = new List<SyncEventError>();
-        var broadcastResults = new List<ResultResponse>();
+        var broadcastResults = new List<Result>();
 
         // Pre-load all heats referenced in the batch (with entries and results)
         var heatIds = request.Events.Select(e => e.HeatId).Distinct().ToList();
@@ -97,6 +115,21 @@ public class SyncService(TidesDbContext db, IHubContext<ResultsHub> hubContext) 
             }
 
             // 5. Apply — new result
+            // Validate entry is in heat and not withdrawn (same checks as Heat.RecordResult)
+            var matchedEntry = heat.Entries.FirstOrDefault(e => e.Id == syncEvent.EntryId);
+            if (matchedEntry == null)
+            {
+                errors.Add(new SyncEventError(syncEvent.EventId, "ENTRY_NOT_IN_HEAT",
+                    $"Entry {syncEvent.EntryId} is not in heat {syncEvent.HeatId}."));
+                continue;
+            }
+            if (matchedEntry.IsWithdrawn)
+            {
+                errors.Add(new SyncEventError(syncEvent.EventId, "ENTRY_WITHDRAWN",
+                    $"Cannot record result for withdrawn entry {syncEvent.EntryId}."));
+                continue;
+            }
+
             try
             {
                 var placing = syncEvent.Placing.HasValue
@@ -107,16 +140,13 @@ public class SyncService(TidesDbContext db, IHubContext<ResultsHub> hubContext) 
 
                 var result = new Result(Guid.NewGuid(), syncEvent.EntryId,
                     placing, time, syncEvent.JudgeScore, status);
+                result.SetHeatId(heat.Id);
 
-                heat.RecordResult(result);
+                // Add via DbSet to avoid EF collection-tracking concurrency issues
+                db.Results.Add(result);
+                heat.IncrementVersion();
 
-                // Build response for SignalR broadcast
-                var entry = heat.Entries.FirstOrDefault(e => e.Id == syncEvent.EntryId);
-                broadcastResults.Add(new ResultResponse(
-                    result.Id, result.HeatId, result.EntryId,
-                    result.Placing?.Position, result.Time?.Time,
-                    result.JudgeScore, result.Status.ToString(),
-                    entry?.ClubId ?? Guid.Empty, "", [], null));
+                broadcastResults.Add(result);
             }
             catch (InvalidOperationException ex)
             {
@@ -143,11 +173,49 @@ public class SyncService(TidesDbContext db, IHubContext<ResultsHub> hubContext) 
             return await HandleConcurrencyConflict(request);
         }
 
-        // Broadcast via SignalR after successful save
-        foreach (var result in broadcastResults)
+        // Broadcast via SignalR after successful save — with enriched data
+        if (broadcastResults.Count > 0)
         {
-            await hubContext.Clients.Group($"carnival-{request.CarnivalId}")
-                .SendAsync("ResultRecorded", result);
+            var entryIds = broadcastResults.Select(r => r.EntryId).Distinct().ToList();
+            var entries = await db.Entries
+                .Where(e => entryIds.Contains(e.Id))
+                .AsNoTracking()
+                .ToListAsync();
+
+            var clubIds = entries.Select(e => e.ClubId).Distinct().ToList();
+            var memberIds = entries.SelectMany(e => e.MemberIds).Distinct().ToList();
+
+            var clubs = await db.Clubs
+                .Where(c => clubIds.Contains(c.Id))
+                .AsNoTracking()
+                .ToDictionaryAsync(c => c.Id);
+            var members = await db.Members
+                .Where(m => memberIds.Contains(m.Id))
+                .AsNoTracking()
+                .ToDictionaryAsync(m => m.Id);
+
+            var entryLookup = entries.ToDictionary(e => e.Id);
+
+            foreach (var result in broadcastResults)
+            {
+                entryLookup.TryGetValue(result.EntryId, out var entry);
+                var clubId = entry?.ClubId ?? Guid.Empty;
+                clubs.TryGetValue(clubId, out var club);
+                var memberBriefs = entry?.MemberIds
+                    .Where(members.ContainsKey)
+                    .Select(mid => new MemberBriefResponse(
+                        members[mid].Id, members[mid].FirstName, members[mid].LastName))
+                    .ToList() ?? [];
+
+                var response = new ResultResponse(
+                    result.Id, result.HeatId, result.EntryId,
+                    result.Placing?.Position, result.Time?.Time,
+                    result.JudgeScore, result.Status.ToString(),
+                    clubId, club?.Name ?? "", memberBriefs, null);
+
+                await hubContext.Clients.Group($"carnival-{request.CarnivalId}")
+                    .SendAsync("ResultRecorded", response);
+            }
         }
 
         return new SyncBatchResponse(acknowledged, conflicts, errors);

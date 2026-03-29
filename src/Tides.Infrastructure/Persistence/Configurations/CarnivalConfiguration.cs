@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tides.Core.Domain;
+using Tides.Core.Domain.Enums;
 
 namespace Tides.Infrastructure.Persistence.Configurations;
 
@@ -11,6 +12,7 @@ public class CarnivalConfiguration : IEntityTypeConfiguration<Carnival>
         builder.ToTable("carnivals");
         builder.HasKey(c => c.Id);
         builder.Property(c => c.Name).HasMaxLength(200).IsRequired();
+        builder.Property(c => c.Status).HasConversion<string>().HasMaxLength(20).HasDefaultValue(CarnivalStatus.Draft);
         builder.Property(c => c.Sanction).HasConversion<string>().HasMaxLength(20);
         builder.Property(c => c.StartDate).IsRequired();
         builder.Property(c => c.EndDate).IsRequired();

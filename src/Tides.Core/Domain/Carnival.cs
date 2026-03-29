@@ -9,6 +9,7 @@ public class Carnival
     public string Name { get; private set; } = null!;
     public Guid HostingClubId { get; private set; }
     public SanctionLevel Sanction { get; private set; }
+    public CarnivalStatus Status { get; private set; } = CarnivalStatus.Draft;
     public DateOnly StartDate { get; private set; }
     public DateOnly EndDate { get; private set; }
 
@@ -89,6 +90,18 @@ public class Carnival
         protest.Adjudicate(outcome, reason);
 
         _domainEvents.Add(new ProtestAdjudicated(Id, protestId, outcome, reason, DateTime.UtcNow));
+    }
+
+    public void Activate()
+    {
+        if (Status == CarnivalStatus.Closed)
+            throw new InvalidOperationException("Cannot activate a closed carnival.");
+        Status = CarnivalStatus.Active;
+    }
+
+    public void Close()
+    {
+        Status = CarnivalStatus.Closed;
     }
 
     public void ClearDomainEvents()

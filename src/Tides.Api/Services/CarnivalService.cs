@@ -15,6 +15,7 @@ public class CarnivalService(
     TidesDbContext db,
     IDrawGeneratorService drawService,
     IPointsCalculatorService pointsService,
+    IPointsChecksumService checksumService,
     IHubContext<ResultsHub> hubContext) : ICarnivalService
 {
     public async Task<List<CarnivalListItemResponse>> ListCarnivalsAsync()
@@ -191,6 +192,13 @@ public class CarnivalService(
         var ledger = pointsService.AggregateClubPoints(allocations);
         var standings = ledger.GetStandings();
 
+        // Compute checksum from active result events for stale-cache detection
+        var activeEvents = await db.ResultEvents
+            .Where(e => e.CarnivalId == carnivalId && e.SupersededBy == null)
+            .AsNoTracking()
+            .ToListAsync();
+        var checksum = checksumService.ComputeChecksum(activeEvents);
+
         var clubIds = standings.Select(s => s.ClubId).ToList();
         var clubs = await db.Clubs
             .Where(c => clubIds.Contains(c.Id))
@@ -204,7 +212,7 @@ public class CarnivalService(
             clubs.TryGetValue(s.ClubId, out var club);
             return new ClubStandingResponse(rank, s.ClubId,
                 club?.Name ?? "Unknown", club?.Abbreviation ?? "?", s.Total.Value);
-        }).ToList());
+        }).ToList(), checksum);
     }
 
     public async Task<HeatDrawResponse> GetHeatAsync(Guid carnivalId, Guid heatId)

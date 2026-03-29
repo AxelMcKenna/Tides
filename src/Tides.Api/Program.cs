@@ -29,6 +29,7 @@ builder.Services.AddDbContext<TidesDbContext>(options =>
 
 builder.Services.AddScoped<IDrawGeneratorService, DrawGeneratorService>();
 builder.Services.AddScoped<IPointsCalculatorService, PointsCalculatorService>();
+builder.Services.AddScoped<IPointsChecksumService, PointsChecksumService>();
 builder.Services.AddScoped<ICarnivalService, CarnivalService>();
 builder.Services.AddScoped<ISyncService, SyncService>();
 
@@ -52,6 +53,7 @@ app.UseExceptionHandler(appBuilder =>
         var (statusCode, title) = exception switch
         {
             NotFoundException => (404, "Not Found"),
+            KeyNotFoundException => (404, "Not Found"),
             InvalidOperationException => (400, "Bad Request"),
             ArgumentException => (400, "Validation Error"),
             _ => (500, "Internal Server Error")

@@ -42,6 +42,7 @@ public class Heat
         if (entry.IsWithdrawn)
             throw new InvalidOperationException($"Cannot record result for withdrawn entry {result.EntryId}.");
 
+        result.SetHeatId(Id);
         _results.Add(result);
         IncrementVersion();
     }

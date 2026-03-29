@@ -29,6 +29,11 @@ public class Result
         Status = status;
     }
 
+    public void SetHeatId(Guid heatId)
+    {
+        HeatId = heatId;
+    }
+
     public void Correct(Placing? newPlacing, TimeResult? newTime, string reason, string userId)
     {
         _auditTrail.Add(new AuditEntry(

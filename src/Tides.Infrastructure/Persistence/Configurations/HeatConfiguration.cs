@@ -22,7 +22,8 @@ public class HeatConfiguration : IEntityTypeConfiguration<Heat>
             .HasForeignKey(r => r.HeatId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Property(h => h.Version).HasDefaultValue(1).IsConcurrencyToken();
+        builder.Property(h => h.Version)
+            .IsConcurrencyToken();
 
         builder.HasIndex(h => h.RoundId);
     }

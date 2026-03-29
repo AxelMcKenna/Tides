@@ -175,10 +175,22 @@ To reconstruct the current state of any heat, filter `result_events` for that he
 
 ---
 
+## Pre-Processing Guards
+
+Before any events are processed:
+
+1. **Batch size limit** — maximum 50 events per batch. Exceeding this returns HTTP 400. Prevents malformed clients from overwhelming the server.
+2. **Carnival existence** — the `carnivalId` must exist. Returns HTTP 404 if not found.
+3. **Carnival status** — the carnival must be `Active` (not `Draft` or `Closed`). Returns HTTP 400 if not active. This prevents syncing to carnivals that haven't started or have already been finalised.
+
+---
+
 ## Quick Reference: Error Codes
 
 | Code | Meaning | Retryable? |
 |---|---|---|
 | `HEAT_NOT_FOUND` | Heat ID doesn't exist on server | No — device needs to re-sync carnival data |
-| `INVALID_OPERATION` | Entry not in heat, or entry withdrawn | No — device needs to re-sync heat data |
+| `ENTRY_NOT_IN_HEAT` | Entry is not assigned to this heat | No — device needs to re-sync heat data |
+| `ENTRY_WITHDRAWN` | Entry has been withdrawn | No — device needs to re-sync heat data |
+| `INVALID_OPERATION` | Other domain validation failure | No — inspect message for details |
 | Version conflict (in `conflicts` array) | Another recorder modified this heat | No — human must review and resubmit |
