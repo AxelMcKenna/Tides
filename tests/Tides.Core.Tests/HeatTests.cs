@@ -207,6 +207,57 @@ public class HeatTests
     }
 
     [Fact]
+    public void Version_StartsAtOne()
+    {
+        var heat = new Heat(Guid.NewGuid(), 1);
+
+        Assert.Equal(1, heat.Version);
+    }
+
+    [Fact]
+    public void RecordResult_IncrementsVersion()
+    {
+        var heat = new Heat(Guid.NewGuid(), 1);
+        var entry = CreateEntry();
+        heat.AssignEntry(entry, 1);
+
+        heat.RecordResult(new Result(Guid.NewGuid(), entry.Id, new Placing(1)));
+
+        Assert.Equal(2, heat.Version);
+    }
+
+    [Fact]
+    public void RecordResult_MultipleResults_VersionIncrementsEachTime()
+    {
+        var heat = new Heat(Guid.NewGuid(), 1);
+        var entry1 = CreateEntry();
+        var entry2 = CreateEntry();
+        var entry3 = CreateEntry();
+        heat.AssignEntry(entry1, 1);
+        heat.AssignEntry(entry2, 2);
+        heat.AssignEntry(entry3, 3);
+
+        heat.RecordResult(new Result(Guid.NewGuid(), entry1.Id, new Placing(1)));
+        Assert.Equal(2, heat.Version);
+
+        heat.RecordResult(new Result(Guid.NewGuid(), entry2.Id, new Placing(2)));
+        Assert.Equal(3, heat.Version);
+
+        heat.RecordResult(new Result(Guid.NewGuid(), entry3.Id, new Placing(3)));
+        Assert.Equal(4, heat.Version);
+    }
+
+    [Fact]
+    public void IncrementVersion_IncrementsByOne()
+    {
+        var heat = new Heat(Guid.NewGuid(), 1);
+
+        heat.IncrementVersion();
+
+        Assert.Equal(2, heat.Version);
+    }
+
+    [Fact]
     public void MarkComplete_SetsIsCompleteAndTimestamp()
     {
         var heat = new Heat(Guid.NewGuid(), 1);

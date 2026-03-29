@@ -30,6 +30,7 @@ builder.Services.AddDbContext<TidesDbContext>(options =>
 builder.Services.AddScoped<IDrawGeneratorService, DrawGeneratorService>();
 builder.Services.AddScoped<IPointsCalculatorService, PointsCalculatorService>();
 builder.Services.AddScoped<ICarnivalService, CarnivalService>();
+builder.Services.AddScoped<ISyncService, SyncService>();
 
 var app = builder.Build();
 

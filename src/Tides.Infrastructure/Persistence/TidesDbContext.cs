@@ -19,6 +19,7 @@ public DbSet<Club> Clubs => Set<Club>();
     public DbSet<Result> Results => Set<Result>();
     public DbSet<PointsTable> PointsTables => Set<PointsTable>();
     public DbSet<Protest> Protests => Set<Protest>();
+    public DbSet<ResultEvent> ResultEvents => Set<ResultEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

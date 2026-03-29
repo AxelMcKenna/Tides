@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tides.Core.Domain.ValueObjects;
@@ -13,9 +14,11 @@ using Tides.Infrastructure.Persistence;
 namespace Tides.Infrastructure.Migrations
 {
     [DbContext(typeof(TidesDbContext))]
-    partial class TidesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260329082150_AddHeatVersion")]
+    partial class AddHeatVersion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -409,74 +412,6 @@ namespace Tides.Infrastructure.Migrations
                     b.HasIndex("HeatId");
 
                     b.ToTable("results", (string)null);
-                });
-
-            modelBuilder.Entity("Tides.Core.Domain.ResultEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CarnivalId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("DeviceId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("DeviceTimestamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("EntryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("ExpectedHeatVersion")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("HeatId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal?>("JudgeScore")
-                        .HasColumnType("numeric");
-
-                    b.Property<int?>("Placing")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ReceivedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("RecorderId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<Guid?>("SupersededBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<TimeSpan?>("Time")
-                        .HasColumnType("interval");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CarnivalId");
-
-                    b.HasIndex("EventId")
-                        .IsUnique();
-
-                    b.HasIndex("HeatId");
-
-                    b.HasIndex("HeatId", "EntryId");
-
-                    b.ToTable("result_events", (string)null);
                 });
 
             modelBuilder.Entity("Tides.Core.Domain.Round", b =>
