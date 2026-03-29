@@ -17,7 +17,7 @@ final class TidesDatabaseTests: XCTestCase {
             id: UUID(),
             name: "Test Carnival",
             hostingClubId: UUID(),
-            sanction: "Branch",
+            sanction: "Regional",
             startDate: "2026-04-11",
             endDate: "2026-04-12"
         )
@@ -36,7 +36,7 @@ final class TidesDatabaseTests: XCTestCase {
         let db = try TidesDatabase()
 
         let carnival = Carnival(id: UUID(), name: "Test", hostingClubId: UUID(), sanction: "Club", startDate: "2026-04-11", endDate: "2026-04-11")
-        let club = Club(id: UUID(), branchId: UUID(), name: "Test Club", abbreviation: "TST")
+        let club = Club(id: UUID(), regionId: UUID(), name: "Test Club", abbreviation: "TST")
         let eventDef = EventDefinition(id: UUID(), carnivalId: carnival.id, name: "Sprint", category: "Sprint", ageGroup: "U14", gender: "Male", maxLanes: 4)
         let round = Round(id: UUID(), eventDefinitionId: eventDef.id, type: "Heat", roundNumber: 1)
         let heat = Heat(id: UUID(), roundId: round.id, heatNumber: 1)

@@ -156,7 +156,7 @@ public class PointsCalculatorServiceTests
             new EntryPoints(Guid.NewGuid(), club1, new Points(4)),
             new EntryPoints(Guid.NewGuid(), club2, new Points(8))
         ]);
-        var alloc3 = new PointsAllocation(Guid.NewGuid(), AgeGroup.U14, [
+        var alloc3 = new PointsAllocation(Guid.NewGuid(), AgeGroup.U15, [
             new EntryPoints(Guid.NewGuid(), club1, new Points(6)),
             new EntryPoints(Guid.NewGuid(), club2, new Points(4))
         ]);
@@ -175,14 +175,14 @@ public class PointsCalculatorServiceTests
         var allocOpen = new PointsAllocation(Guid.NewGuid(), AgeGroup.Open, [
             new EntryPoints(Guid.NewGuid(), club1, new Points(8))
         ]);
-        var allocU14 = new PointsAllocation(Guid.NewGuid(), AgeGroup.U14, [
+        var allocU14 = new PointsAllocation(Guid.NewGuid(), AgeGroup.U15, [
             new EntryPoints(Guid.NewGuid(), club1, new Points(6))
         ]);
 
         var ledger = _service.AggregateClubPoints([allocOpen, allocU14]);
 
         var openStandings = ledger.GetStandingsByAgeGroup(AgeGroup.Open);
-        var u14Standings = ledger.GetStandingsByAgeGroup(AgeGroup.U14);
+        var u14Standings = ledger.GetStandingsByAgeGroup(AgeGroup.U15);
 
         Assert.Equal(8m, openStandings.First(s => s.ClubId == club1).Total.Value);
         Assert.Equal(6m, u14Standings.First(s => s.ClubId == club1).Total.Value);

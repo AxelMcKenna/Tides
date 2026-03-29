@@ -30,7 +30,7 @@ public final class TidesDatabase: Sendable {
 
             try db.create(table: "clubs") { t in
                 t.column("id", .text).primaryKey()
-                t.column("branchId", .text).notNull()
+                t.column("regionId", .text).notNull()
                 t.column("name", .text).notNull()
                 t.column("abbreviation", .text).notNull()
             }
