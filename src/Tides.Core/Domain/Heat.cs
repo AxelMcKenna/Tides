@@ -9,6 +9,7 @@ public class Heat
     public IReadOnlyList<Entry> Entries => _entries;
     private readonly List<Result> _results = [];
     public IReadOnlyList<Result> Results => _results;
+    public int Version { get; private set; } = 1;
     public bool IsComplete { get; private set; }
     public DateTime? CompletedAt { get; private set; }
 
@@ -42,6 +43,12 @@ public class Heat
             throw new InvalidOperationException($"Cannot record result for withdrawn entry {result.EntryId}.");
 
         _results.Add(result);
+        IncrementVersion();
+    }
+
+    public void IncrementVersion()
+    {
+        Version++;
     }
 
     public List<Result> GetRankedResults()
