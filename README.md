@@ -1,4 +1,4 @@
-# Shore
+# Tides
 
 Live results and competition management for surf lifesaving carnivals.
 
