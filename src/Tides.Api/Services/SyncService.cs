@@ -114,22 +114,7 @@ public class SyncService(TidesDbContext db, IHubContext<ResultsHub> hubContext) 
                 }
             }
 
-            // 5. Apply — new result
-            // Validate entry is in heat and not withdrawn (same checks as Heat.RecordResult)
-            var matchedEntry = heat.Entries.FirstOrDefault(e => e.Id == syncEvent.EntryId);
-            if (matchedEntry == null)
-            {
-                errors.Add(new SyncEventError(syncEvent.EventId, "ENTRY_NOT_IN_HEAT",
-                    $"Entry {syncEvent.EntryId} is not in heat {syncEvent.HeatId}."));
-                continue;
-            }
-            if (matchedEntry.IsWithdrawn)
-            {
-                errors.Add(new SyncEventError(syncEvent.EventId, "ENTRY_WITHDRAWN",
-                    $"Cannot record result for withdrawn entry {syncEvent.EntryId}."));
-                continue;
-            }
-
+            // 5. Apply — new result via domain model
             try
             {
                 var placing = syncEvent.Placing.HasValue
@@ -140,17 +125,17 @@ public class SyncService(TidesDbContext db, IHubContext<ResultsHub> hubContext) 
 
                 var result = new Result(Guid.NewGuid(), syncEvent.EntryId,
                     placing, time, syncEvent.JudgeScore, status);
-                result.SetHeatId(heat.Id);
 
-                // Add via DbSet to avoid EF collection-tracking concurrency issues
-                db.Results.Add(result);
-                heat.IncrementVersion();
+                heat.RecordResult(result);
 
                 broadcastResults.Add(result);
             }
             catch (InvalidOperationException ex)
             {
-                errors.Add(new SyncEventError(syncEvent.EventId, "INVALID_OPERATION", ex.Message));
+                var errorCode = ex.Message.Contains("not in this heat") ? "ENTRY_NOT_IN_HEAT"
+                    : ex.Message.Contains("withdrawn") ? "ENTRY_WITHDRAWN"
+                    : "INVALID_OPERATION";
+                errors.Add(new SyncEventError(syncEvent.EventId, errorCode, ex.Message));
                 continue;
             }
 
@@ -169,7 +154,7 @@ public class SyncService(TidesDbContext db, IHubContext<ResultsHub> hubContext) 
         }
         catch (DbUpdateConcurrencyException)
         {
-            // Another request modified a heat concurrently — convert affected events to conflicts
+            // Another HTTP request modified a heat concurrently — return all as conflicts
             return await HandleConcurrencyConflict(request);
         }
 
@@ -243,7 +228,6 @@ public class SyncService(TidesDbContext db, IHubContext<ResultsHub> hubContext) 
 
     private async Task<SyncBatchResponse> HandleConcurrencyConflict(SyncBatchRequest request)
     {
-        // Reload heats and return all events as conflicts
         var conflicts = new List<SyncEventConflict>();
 
         foreach (var syncEvent in request.Events)

@@ -11,6 +11,7 @@ public class ResultConfiguration : IEntityTypeConfiguration<Result>
     {
         builder.ToTable("results");
         builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).ValueGeneratedNever();
 
         builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(20);
         builder.Property(r => r.JudgeScore).HasPrecision(8, 2);

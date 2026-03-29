@@ -10,6 +10,7 @@ public class EntryConfiguration : IEntityTypeConfiguration<Entry>
     {
         builder.ToTable("entries");
         builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id).ValueGeneratedNever();
 
         // MemberIds stored as JSON array — supports individual and relay entries
         builder.Property(e => e.MemberIds)

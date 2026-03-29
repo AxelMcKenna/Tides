@@ -143,7 +143,7 @@ public class SyncIntegrationTests(DatabaseFixture fixture)
             Assert.Single(response.Acknowledged);
         }
 
-        // Add a second entry to the heat (via DbSet to avoid collection-tracking concurrency)
+        // Add a second entry to the heat
         Guid entry2Id;
         {
             await using var db = fixture.CreateContext();
@@ -153,14 +153,12 @@ public class SyncIntegrationTests(DatabaseFixture fixture)
             var club2 = new Club(Guid.NewGuid(), regionId, "Muriwai", "MUR");
             var member2 = new Member(Guid.NewGuid(), club2.Id, "Second", "Athlete",
                 new DateOnly(2010, 1, 1), Gender.Male, null);
-            var entry2 = new Entry(Guid.NewGuid(), eventDefId, club2.Id, [member2.Id]);
-            entry2.AssignToHeat(heatId);
-            entry2.AssignLane(2);
-
             db.Add(club2);
             db.Add(member2);
-            db.Entries.Add(entry2);
 
+            var heat = await db.Heats.Include(h => h.Entries).FirstAsync(h => h.Id == heatId);
+            var entry2 = new Entry(Guid.NewGuid(), eventDefId, club2.Id, [member2.Id]);
+            heat.AssignEntry(entry2, 2);
             entry2Id = entry2.Id;
             await db.SaveChangesAsync();
         }
