@@ -4,12 +4,29 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { EventSummaryResponse } from "@/lib/types";
 
+const categoryColors: Record<string, string> = {
+  surf: "bg-cat-surf",
+  beach: "bg-cat-beach",
+  board: "bg-cat-board",
+  boat: "bg-cat-boat",
+};
+
+function getCategoryColor(category: string): string {
+  const lower = category.toLowerCase();
+  for (const [key, cls] of Object.entries(categoryColors)) {
+    if (lower.includes(key)) return cls;
+  }
+  return "bg-tide-900";
+}
+
 export function EventExplorer({
   events,
   carnivalId,
+  isLive = false,
 }: {
   events: EventSummaryResponse[];
   carnivalId: string;
+  isLive?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [ageGroup, setAgeGroup] = useState("");
@@ -43,7 +60,25 @@ export function EventExplorer({
 
   return (
     <div className="space-y-4">
-      {/* Filter bar */}
+      {/* Header: live badge + event count */}
+      <div className="flex items-center gap-3">
+        {isLive && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-live/10 px-2.5 py-1">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-live opacity-60 live-dot" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-live" />
+            </span>
+            <span className="text-[11px] font-heading font-semibold uppercase tracking-wider text-live">
+              Live
+            </span>
+          </span>
+        )}
+        <span className="text-sm font-heading font-semibold text-ink-700">
+          {events.length} Events
+        </span>
+      </div>
+
+      {/* Filter bar — all controls same height */}
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
           <svg
@@ -57,7 +92,7 @@ export function EventExplorer({
             placeholder="Search events..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full bg-white rounded-[--radius-md] border border-ink-200/60 pl-10 pr-4 py-2.5 min-h-[44px] text-sm text-ink-900 placeholder:text-ink-400 shadow-card focus:outline-none focus:ring-2 focus:ring-tide-500/20 focus:border-tide-500 transition-all"
+            className="w-full h-11 bg-white rounded-[--radius-md] border border-ink-200/60 pl-10 pr-4 text-sm text-ink-900 placeholder:text-ink-400 shadow-card focus:outline-none focus:ring-2 focus:ring-tide-500/20 focus:border-tide-500 transition-all"
           />
         </div>
         <div className="flex gap-2">
@@ -103,7 +138,7 @@ export function EventExplorer({
               style={{ animationDelay: `${i * 30}ms` }}
             >
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-[--radius-sm] bg-tide-900 flex items-center justify-center shrink-0">
+                <div className={`h-9 w-9 rounded-[--radius-sm] ${getCategoryColor(event.category)} flex items-center justify-center shrink-0`}>
                   <span className="text-[10px] font-heading font-bold text-white uppercase">
                     {event.category.slice(0, 3)}
                   </span>
@@ -165,7 +200,7 @@ function FilterSelect({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       aria-label={`Filter by ${label.toLowerCase()}`}
-      className={`rounded-[--radius-md] border border-ink-200/60 bg-white px-3 py-2.5 min-h-[44px] text-sm cursor-pointer hover:border-ink-400 focus:outline-none focus:ring-2 focus:ring-tide-500/20 focus:border-tide-500 transition-all ${
+      className={`h-11 rounded-[--radius-md] border border-ink-200/60 bg-white px-3 text-sm shadow-card cursor-pointer hover:border-ink-400 focus:outline-none focus:ring-2 focus:ring-tide-500/20 focus:border-tide-500 transition-all ${
         value ? "text-tide-700 font-medium" : "text-ink-500"
       }`}
     >

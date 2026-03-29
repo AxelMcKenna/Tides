@@ -10,7 +10,7 @@ export default function HomeError({
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="text-center max-w-md">
-        <h1 className="text-2xl font-heading font-bold uppercase tracking-[0.3em]">Shore</h1>
+        <h1 className="text-2xl font-heading font-bold uppercase tracking-[0.3em]">Tides</h1>
         <p className="mt-3 text-sm text-ink-500">
           We couldn&apos;t load carnivals right now. This might be a temporary
           issue.
