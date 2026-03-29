@@ -25,7 +25,8 @@ public record ResultResponse(
     string Status,
     Guid ClubId,
     string ClubName,
-    List<MemberBriefResponse> Members);
+    List<MemberBriefResponse> Members,
+    decimal? Points = null);
 
 public record CarnivalResultsResponse(
     Guid CarnivalId,
@@ -43,4 +44,5 @@ public record HeatResultsResponse(
     int HeatNumber,
     string RoundType,
     bool IsComplete,
+    DateTime? CompletedAt,
     List<ResultResponse> Results);

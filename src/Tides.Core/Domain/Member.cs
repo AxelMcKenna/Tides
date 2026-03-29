@@ -38,20 +38,10 @@ public class Member
 
         return age switch
         {
-            < 8 => AgeGroup.U8,
-            8 => AgeGroup.U9,
-            9 => AgeGroup.U10,
-            10 => AgeGroup.U11,
-            11 => AgeGroup.U12,
-            12 => AgeGroup.U13,
-            13 => AgeGroup.U14,
-            14 => AgeGroup.U15,
+            < 15 => AgeGroup.U15,
             15 or 16 => AgeGroup.U17,
-            >= 17 and < 30 => AgeGroup.Open,
-            >= 30 and < 40 => AgeGroup.Masters30,
-            >= 40 and < 50 => AgeGroup.Masters40,
-            >= 50 and < 60 => AgeGroup.Masters50,
-            _ => AgeGroup.Masters60
+            17 or 18 => AgeGroup.U19,
+            _ => AgeGroup.Open
         };
     }
 }

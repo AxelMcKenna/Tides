@@ -11,6 +11,13 @@ const rankColors: Record<number, string> = {
   1: "text-amber-600",
   2: "text-ink-500",
   3: "text-amber-700",
+  // 4+ falls through to default
+};
+
+const podiumAccent: Record<number, string> = {
+  1: "border-l-4 border-l-medal-gold",
+  2: "border-l-4 border-l-medal-silver",
+  3: "border-l-4 border-l-medal-bronze",
 };
 
 export function LiveLeaderboard({
@@ -33,7 +40,7 @@ export function LiveLeaderboard({
     }
   }, [carnivalId]);
 
-  const connectionStatus = useSignalR(carnivalId, {
+  const { status: connectionStatus, lastEvent } = useSignalR(carnivalId, {
     ResultRecorded: refreshLeaderboard,
     ResultCorrected: refreshLeaderboard,
   });
@@ -55,7 +62,7 @@ export function LiveLeaderboard({
   return (
     <div>
       <div className="flex justify-end mb-4">
-        <LiveBadge status={connectionStatus} />
+        <LiveBadge status={connectionStatus} lastEvent={lastEvent} />
       </div>
 
       <div className="bg-white rounded-[--radius-lg] border border-ink-200 shadow-card overflow-hidden">
@@ -72,15 +79,15 @@ export function LiveLeaderboard({
             {data.standings.map((s, i) => (
               <tr
                 key={s.clubId}
-                className={`result-row border-t border-ink-100 animate-fade-up ${i < 3 ? "bg-tide-50/40" : ""}`}
+                className="result-row border-t border-ink-100 animate-fade-up"
                 style={{ animationDelay: `${i * 40}ms` }}
               >
-                <td className={`pl-5 pr-2 py-4 text-center font-heading font-bold text-xl tabular-nums ${rankColors[s.rank] ?? "text-ink-300"}`}>
+                <td className={`pr-2 py-4 text-center font-heading font-bold text-xl tabular-nums ${podiumAccent[s.rank] ?? "border-l-4 border-l-tide-800"} ${rankColors[s.rank] ?? "text-tide-800"}`}>
                   {s.rank}
                 </td>
                 <td className="py-4">
                   <div className="flex items-baseline gap-2">
-                    <span className={`font-heading text-ink-900 ${i < 3 ? "font-bold text-base" : "font-semibold text-sm"}`}>
+                    <span className="font-heading font-semibold text-base text-ink-900">
                       {s.clubName}
                     </span>
                     <span className="text-xs font-heading text-ink-400 uppercase tracking-wide">
@@ -89,7 +96,7 @@ export function LiveLeaderboard({
                   </div>
                 </td>
                 <td className="px-5 py-4 text-right">
-                  <span className={`font-data tabular-nums ${i < 3 ? "text-2xl font-bold text-ink-900" : "text-lg font-bold text-ink-600"}`}>
+                  <span className="font-data tabular-nums text-xl font-bold text-ink-900">
                     {s.totalPoints}
                   </span>
                 </td>

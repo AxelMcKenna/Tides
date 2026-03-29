@@ -18,7 +18,7 @@ export function LiveResults({
   const [ageGroup, setAgeGroup] = useState("");
   const [gender, setGender] = useState("");
 
-  const connectionStatus = useSignalR(carnivalId, {
+  const { status: connectionStatus, lastEvent } = useSignalR(carnivalId, {
     ResultRecorded: (result: ResultResponse) => {
       setData((prev) => patchResult(prev, result));
     },
@@ -101,7 +101,7 @@ export function LiveResults({
             placeholder="Search competitors, clubs..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white rounded-[--radius-md] border border-ink-200/60 pl-10 pr-4 py-2.5 min-h-[44px] text-sm text-ink-900 placeholder:text-ink-400 shadow-card focus:outline-none focus:ring-2 focus:ring-tide-500/20 focus:border-tide-500 transition-all"
+            className="w-full bg-white rounded-[--radius-md] border border-ink-200 pl-10 pr-4 py-2.5 min-h-[44px] text-sm text-ink-900 placeholder:text-ink-400 shadow-card focus:outline-none focus:ring-2 focus:ring-tide-500/20 focus:border-tide-500 transition-all"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -111,7 +111,7 @@ export function LiveResults({
           {genders.length > 1 && (
             <FilterSelect label="Gender" value={gender} options={genders} onChange={setGender} />
           )}
-          <LiveBadge status={connectionStatus} />
+          <LiveBadge status={connectionStatus} lastEvent={lastEvent} />
         </div>
       </div>
 
@@ -171,14 +171,21 @@ export function LiveResults({
                       Heat {heat.heatNumber}
                     </span>
                   </div>
-                  {heat.isComplete && (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-heading font-bold text-signal-green bg-signal-green/12 px-2.5 py-0.5 rounded-full">
-                      <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
-                      </svg>
-                      Official
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {heat.completedAt && (
+                      <span className="text-[11px] font-heading text-ink-400 tabular-nums">
+                        {new Date(heat.completedAt).toLocaleTimeString("en-NZ", { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    )}
+                    {heat.isComplete && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-heading font-bold text-signal-green bg-signal-green/12 px-2.5 py-0.5 rounded-full">
+                        <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
+                        </svg>
+                        Official
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Results — stacked on mobile, table on md+ */}
@@ -189,6 +196,9 @@ export function LiveResults({
                         <th scope="col" className="pl-4 pr-2 py-2 text-center w-14">Pos</th>
                         <th scope="col" className="py-2 text-left">Competitor</th>
                         <th scope="col" className="py-2 text-left">Club</th>
+                        {heat.results.some((r) => r.points != null) && (
+                          <th scope="col" className="px-3 py-2 text-right">Pts</th>
+                        )}
                         <th scope="col" className="pr-4 py-2 text-right w-24"></th>
                       </tr>
                     </thead>
@@ -213,6 +223,15 @@ export function LiveResults({
                             <td className="py-3 text-ink-500 font-heading">
                               {result.clubName}
                             </td>
+                            {heat.results.some((r) => r.points != null) && (
+                              <td className="px-3 py-3 text-right">
+                                {result.points != null && (
+                                  <span className="font-data font-bold tabular-nums text-tide-700">
+                                    {result.points}
+                                  </span>
+                                )}
+                              </td>
+                            )}
                             <td className="pr-4 py-3 text-right">
                               {result.status === "Provisional" && (
                                 <span className="text-[11px] font-heading font-medium text-signal-amber bg-signal-amber/10 px-2 py-0.5 rounded-full">
@@ -241,6 +260,14 @@ export function LiveResults({
                           </p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-xs text-ink-500 font-heading">{result.clubName}</span>
+                            {result.points != null && (
+                              <>
+                                <span className="text-ink-300 text-xs">·</span>
+                                <span className="font-data font-bold tabular-nums text-tide-700 text-xs">
+                                  {result.points} pts
+                                </span>
+                              </>
+                            )}
                             {result.status === "Provisional" && (
                               <span className="text-[10px] font-heading font-medium text-signal-amber bg-signal-amber/10 px-1.5 py-0.5 rounded-full">
                                 Provisional

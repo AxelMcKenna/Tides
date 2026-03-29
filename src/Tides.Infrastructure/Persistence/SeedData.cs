@@ -26,25 +26,21 @@ public static class SeedData
         var bop = new Region(G("a2000002"), slsnz.Id, "Bay of Plenty");
         var waikato = new Region(G("a2000003"), slsnz.Id, "Waikato");
         context.Regions.AddRange(northern, bop, waikato);
-        var auckland = new Branch(G("a3000001"), northern.Id, "Auckland");
-        var tauranga = new Branch(G("a3000002"), bop.Id, "Tauranga");
-        var waikatoBranch = new Branch(G("a3000003"), waikato.Id, "Waikato");
-        context.Branches.AddRange(auckland, tauranga, waikatoBranch);
 
-        // 12 Clubs
+        // 12 Clubs — Organisation -> Region -> Club
         Club[] clubs = [
-            new(PihaId, auckland.Id, "Piha Surf Life Saving Club", "PIH"),
-            new(MuriwaiId, auckland.Id, "Muriwai Volunteer Lifeguard Service", "MUR"),
-            new(BethellsId, auckland.Id, "Bethells Beach SLSP", "BET"),
-            new(OrewaId, auckland.Id, "Orewa Surf Life Saving Club", "ORE"),
-            new(WaipuId, auckland.Id, "Waipu Cove SLSC", "WAI"),
-            new(RedBeachId, auckland.Id, "Red Beach Surf Life Saving Club", "RED"),
-            new(MtMaunganuiId, tauranga.Id, "Mount Maunganui Lifeguard Service", "MTM"),
-            new(PapmoaId, tauranga.Id, "Papamoa Surf Life Saving Club", "PAP"),
-            new(OmanuId, tauranga.Id, "Omanu Beach SLSC", "OMA"),
-            new(MairangiBayId, auckland.Id, "Mairangi Bay Surf Lifesaving Club", "MAI"),
-            new(KareKareId, auckland.Id, "Karekare SLSC", "KAR"),
-            new(RaglanId, waikatoBranch.Id, "Raglan Surf Life Saving Club", "RAG"),
+            new(PihaId, northern.Id, "Piha Surf Life Saving Club", "PIH"),
+            new(MuriwaiId, northern.Id, "Muriwai Volunteer Lifeguard Service", "MUR"),
+            new(BethellsId, northern.Id, "Bethells Beach SLSP", "BET"),
+            new(OrewaId, northern.Id, "Orewa Surf Life Saving Club", "ORE"),
+            new(WaipuId, northern.Id, "Waipu Cove SLSC", "WAI"),
+            new(RedBeachId, northern.Id, "Red Beach Surf Life Saving Club", "RED"),
+            new(MtMaunganuiId, bop.Id, "Mount Maunganui Lifeguard Service", "MTM"),
+            new(PapmoaId, bop.Id, "Papamoa Surf Life Saving Club", "PAP"),
+            new(OmanuId, bop.Id, "Omanu Beach SLSC", "OMA"),
+            new(MairangiBayId, northern.Id, "Mairangi Bay Surf Lifesaving Club", "MAI"),
+            new(KareKareId, northern.Id, "Karekare SLSC", "KAR"),
+            new(RaglanId, waikato.Id, "Raglan Surf Life Saving Club", "RAG"),
         ];
         context.Clubs.AddRange(clubs);
 
@@ -104,20 +100,20 @@ public static class SeedData
         List<Member> ByClub(Guid clubId) => members.Where(m => m.ClubId == clubId).ToList();
 
         // ====================================================================
-        // CARNIVAL 1: Live — Auckland Branch Championships (today)
+        // CARNIVAL 1: Live — Northern Region Championships (today)
         // ====================================================================
-        var c1 = new Carnival(Seq(0xc1, 1), "Auckland Branch Championships 2026",
-            PihaId, SanctionLevel.Branch, new DateOnly(2026, 3, 29), new DateOnly(2026, 3, 30));
+        var c1 = new Carnival(Seq(0xc1, 1), "Northern Region Championships 2026",
+            PihaId, SanctionLevel.Regional, new DateOnly(2026, 3, 29), new DateOnly(2026, 3, 30));
         c1.SetPointsTable(Pts(Seq(0xd1, 1)));
 
         // 8 events across age groups
         var c1Events = new (string name, EventCategory cat, AgeGroup age, Gender gender)[]
         {
-            ("U14 Male Sprint", EventCategory.Sprint, AgeGroup.U14, Gender.Male),
-            ("U14 Female Sprint", EventCategory.Sprint, AgeGroup.U14, Gender.Female),
+            ("U15 Male Sprint", EventCategory.Sprint, AgeGroup.U15, Gender.Male),
+            ("U15 Female Sprint", EventCategory.Sprint, AgeGroup.U15, Gender.Female),
             ("Open Male Beach Flags", EventCategory.Flags, AgeGroup.Open, Gender.Male),
             ("Open Female Beach Flags", EventCategory.Flags, AgeGroup.Open, Gender.Female),
-            ("U14 Male Board Race", EventCategory.Board, AgeGroup.U14, Gender.Male),
+            ("U15 Male Board Race", EventCategory.Board, AgeGroup.U15, Gender.Male),
             ("Open Male Ocean Swim", EventCategory.Swim, AgeGroup.Open, Gender.Male),
             ("Open Female Ocean Swim", EventCategory.Swim, AgeGroup.Open, Gender.Female),
             ("Open Male Ironman", EventCategory.Ironman, AgeGroup.Open, Gender.Male),
@@ -164,13 +160,13 @@ public static class SeedData
         var c2 = new Carnival(Seq(0xc1, 2), "Piha Classic 2026",
             PihaId, SanctionLevel.Club, new DateOnly(2026, 2, 15), new DateOnly(2026, 2, 15));
         c2.SetPointsTable(Pts(Seq(0xd1, 2)));
-        var c2Events = new[] { "U14 Male Sprint", "U14 Female Sprint", "Open Male Beach Flags", "Open Female Ocean Swim" };
+        var c2Events = new[] { "U15 Male Sprint", "U15 Female Sprint", "Open Male Beach Flags", "Open Female Ocean Swim" };
         var c2Clubs = new[] { PihaId, MuriwaiId, BethellsId, OrewaId };
         for (var e = 0; e < c2Events.Length; e++)
         {
             var gender = e % 2 == 0 ? Gender.Male : Gender.Female;
             var cat = e < 2 ? EventCategory.Sprint : e == 2 ? EventCategory.Flags : EventCategory.Swim;
-            var age = e < 2 ? AgeGroup.U14 : AgeGroup.Open;
+            var age = e < 2 ? AgeGroup.U15 : AgeGroup.Open;
             var evt = new EventDefinition(Seq(0xe2, e + 1), c2Events[e], cat, age, gender, 4);
             c2.AddEvent(evt);
             var entrants = c2Clubs.Select(cid => ByClub(cid).FirstOrDefault(m => m.Gender == gender))
@@ -186,12 +182,12 @@ public static class SeedData
             MtMaunganuiId, SanctionLevel.Club, new DateOnly(2026, 1, 24), new DateOnly(2026, 1, 24));
         c3.SetPointsTable(Pts(Seq(0xd1, 3)));
         var c3Clubs = new[] { MtMaunganuiId, PapmoaId, OmanuId };
-        var c3Events2 = new[] { "U14 Male Sprint", "Open Male Board Race", "Open Female Sprint" };
+        var c3Events2 = new[] { "U15 Male Sprint", "Open Male Board Race", "Open Female Sprint" };
         for (var e = 0; e < c3Events2.Length; e++)
         {
             var gender = e == 2 ? Gender.Female : Gender.Male;
             var cat = e == 1 ? EventCategory.Board : EventCategory.Sprint;
-            var age = e == 0 ? AgeGroup.U14 : AgeGroup.Open;
+            var age = e == 0 ? AgeGroup.U15 : AgeGroup.Open;
             var evt = new EventDefinition(Seq(0xe3, e + 1), c3Events2[e], cat, age, gender, 4);
             c3.AddEvent(evt);
             var entrants = c3Clubs.Select(cid => ByClub(cid).FirstOrDefault(m => m.Gender == gender))
@@ -208,11 +204,11 @@ public static class SeedData
         c4.SetPointsTable(Pts(Seq(0xd1, 4)));
         var c4Clubs = new[] { OrewaId, RedBeachId, MairangiBayId, WaipuId };
         foreach (var (eName, eCat, eAge, eGender, eIdx) in new[] {
-            ("U14 Male Sprint", EventCategory.Sprint, AgeGroup.U14, Gender.Male, 1),
-            ("U14 Female Sprint", EventCategory.Sprint, AgeGroup.U14, Gender.Female, 2),
+            ("U15 Male Sprint", EventCategory.Sprint, AgeGroup.U15, Gender.Male, 1),
+            ("U15 Female Sprint", EventCategory.Sprint, AgeGroup.U15, Gender.Female, 2),
             ("Open Male Beach Flags", EventCategory.Flags, AgeGroup.Open, Gender.Male, 3),
             ("Open Female Beach Flags", EventCategory.Flags, AgeGroup.Open, Gender.Female, 4),
-            ("U14 Male Board Race", EventCategory.Board, AgeGroup.U14, Gender.Male, 5),
+            ("U15 Male Board Race", EventCategory.Board, AgeGroup.U15, Gender.Male, 5),
         })
         {
             var evt = new EventDefinition(Seq(0xe4, eIdx), eName, eCat, eAge, eGender, 4);
@@ -246,15 +242,15 @@ public static class SeedData
         // CARNIVAL 6: Upcoming — Northern Region Championships
         // ====================================================================
         var c6 = new Carnival(Seq(0xc1, 6), "Northern Region Championships 2026",
-            OrewaId, SanctionLevel.State, new DateOnly(2026, 5, 10), new DateOnly(2026, 5, 11));
+            OrewaId, SanctionLevel.Regional, new DateOnly(2026, 5, 10), new DateOnly(2026, 5, 11));
         c6.SetPointsTable(Pts(Seq(0xd1, 6)));
         foreach (var (eName, eCat, eAge, eGender, eIdx) in new[] {
-            ("U14 Male Sprint", EventCategory.Sprint, AgeGroup.U14, Gender.Male, 1),
-            ("U14 Female Sprint", EventCategory.Sprint, AgeGroup.U14, Gender.Female, 2),
+            ("U15 Male Sprint", EventCategory.Sprint, AgeGroup.U15, Gender.Male, 1),
+            ("U15 Female Sprint", EventCategory.Sprint, AgeGroup.U15, Gender.Female, 2),
             ("Open Male Beach Flags", EventCategory.Flags, AgeGroup.Open, Gender.Male, 3),
             ("Open Female Ocean Swim", EventCategory.Swim, AgeGroup.Open, Gender.Female, 4),
             ("Open Male Ironman", EventCategory.Ironman, AgeGroup.Open, Gender.Male, 5),
-            ("U14 Male Board Race", EventCategory.Board, AgeGroup.U14, Gender.Male, 6),
+            ("U15 Male Board Race", EventCategory.Board, AgeGroup.U15, Gender.Male, 6),
         })
         {
             var evt = new EventDefinition(Seq(0xe6, eIdx), eName, eCat, eAge, eGender, 6);
@@ -305,8 +301,8 @@ public static class SeedData
             MtMaunganuiId, SanctionLevel.National, new DateOnly(2026, 7, 5), new DateOnly(2026, 7, 6));
         c8.SetPointsTable(Pts(Seq(0xd1, 8)));
         foreach (var (eName, eCat, eAge, eGender, eIdx) in new[] {
-            ("U14 Male Sprint", EventCategory.Sprint, AgeGroup.U14, Gender.Male, 1),
-            ("U14 Female Sprint", EventCategory.Sprint, AgeGroup.U14, Gender.Female, 2),
+            ("U15 Male Sprint", EventCategory.Sprint, AgeGroup.U15, Gender.Male, 1),
+            ("U15 Female Sprint", EventCategory.Sprint, AgeGroup.U15, Gender.Female, 2),
             ("U17 Male Sprint", EventCategory.Sprint, AgeGroup.U17, Gender.Male, 3),
             ("U17 Female Sprint", EventCategory.Sprint, AgeGroup.U17, Gender.Female, 4),
             ("Open Male Sprint", EventCategory.Sprint, AgeGroup.Open, Gender.Male, 5),
