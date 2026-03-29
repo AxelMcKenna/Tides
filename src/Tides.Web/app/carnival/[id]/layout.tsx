@@ -15,7 +15,7 @@ export default async function CarnivalLayout({
 
   return (
     <div className="min-h-screen bg-ink-50">
-      <header className="bg-tide-900">
+      <header className="bg-tide-900 header-accent">
         <div className="max-w-7xl mx-auto px-5 py-6">
           <div className="flex items-center gap-4">
             <Link
@@ -35,6 +35,9 @@ export default async function CarnivalLayout({
                 </span>
                 <span className="text-xs font-heading font-semibold uppercase tracking-wider text-tide-300 bg-tide-800 px-2 py-0.5 rounded">
                   {carnival.sanction}
+                </span>
+                <span className="text-xs font-heading text-tide-400">
+                  {carnival.events.length} event{carnival.events.length !== 1 ? "s" : ""}
                 </span>
               </div>
             </div>
