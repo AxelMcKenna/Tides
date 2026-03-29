@@ -10,6 +10,7 @@ public class Heat
     private readonly List<Result> _results = [];
     public IReadOnlyList<Result> Results => _results;
     public bool IsComplete { get; private set; }
+    public DateTime? CompletedAt { get; private set; }
 
     private Heat() { }
 
@@ -57,5 +58,6 @@ public class Heat
     public void MarkComplete()
     {
         IsComplete = true;
+        CompletedAt = DateTime.UtcNow;
     }
 }
