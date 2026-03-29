@@ -13,7 +13,7 @@ export default function CarnivalError({
         <h2 className="text-lg font-semibold text-ink-900">
           Something went wrong
         </h2>
-        <p className="mt-2 text-sm text-ink-400">
+        <p className="mt-2 text-sm text-ink-500">
           We couldn&apos;t load the carnival data. This might be a temporary
           issue — try again.
         </p>

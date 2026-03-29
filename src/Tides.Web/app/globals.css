@@ -41,6 +41,12 @@
   --color-medal-bronze:     #B87333;
   --color-medal-bronze-bg:  #FBF3EB;
 
+  /* --- Colors: Category accents --- */
+  --color-cat-surf:   #1A73B5;
+  --color-cat-beach:  #C17A2F;
+  --color-cat-board:  #2D8A56;
+  --color-cat-boat:   #7B4BAA;
+
   /* --- Colors: Display mode --- */
   --color-display-bg:   #080C16;
   --color-display-card: #0F1526;
@@ -64,9 +70,9 @@
   --radius-full: 9999px;
 
   /* --- Shadows --- */
-  --shadow-card:  0 1px 2px rgba(10, 25, 35, 0.05), 0 4px 16px rgba(10, 25, 35, 0.06);
-  --shadow-float: 0 4px 24px rgba(10, 25, 35, 0.12), 0 1px 3px rgba(10, 25, 35, 0.08);
-  --shadow-glow:  0 0 20px rgba(59, 89, 152, 0.15);
+  --shadow-card:  0 1px 3px rgba(10, 25, 35, 0.08), 0 4px 16px rgba(10, 25, 35, 0.10);
+  --shadow-float: 0 8px 30px rgba(10, 25, 35, 0.16), 0 2px 6px rgba(10, 25, 35, 0.10);
+  --shadow-glow:  0 0 24px rgba(59, 89, 152, 0.20);
 
   /* --- Transitions --- */
   --duration-fast:     120ms;
@@ -78,6 +84,20 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Header accent line --- */
+.header-accent {
+  position: relative;
+}
+.header-accent::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-tide-500), var(--color-tide-700) 50%, transparent);
 }
 
 /* --- Placing row highlight on hover --- */
@@ -117,13 +137,19 @@ body {
   to { transform: scaleX(1); }
 }
 
-/* --- Live pulse --- */
-@keyframes live-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+/* --- Live sonar pulse --- */
+@keyframes sonar-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
 }
 .live-dot {
-  animation: live-pulse 2s ease-in-out infinite;
+  animation: sonar-ping 1.8s ease-out infinite;
 }
 
 /* --- Stagger animation for lists --- */
@@ -159,6 +185,47 @@ body {
 /* --- Number tabular figures --- */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* --- Crossfade for display slides --- */
+@keyframes crossfade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-crossfade {
+  animation: crossfade-in 300ms ease both;
+}
+
+/* --- Overflow scroll hint (right fade) --- */
+.scroll-hint {
+  position: relative;
+}
+.scroll-hint::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 32px;
+  background: linear-gradient(to right, transparent, white);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-fast) ease;
+}
+.scroll-hint-visible::after {
+  opacity: 1;
+}
+
+/* --- Active press feedback for cards --- */
+.press-card {
+  transition: box-shadow var(--duration-standard) ease, transform var(--duration-standard) ease;
+}
+.press-card:active {
+  transform: scale(0.98);
 }
 
 @media (prefers-reduced-motion: reduce) {
