@@ -4,7 +4,7 @@ import GRDB
 /// Downloads a full carnival snapshot from the API into local GRDB.
 /// Called once at the start of a carnival day when connectivity is available.
 public actor CarnivalSyncService {
-    private let db: ShoreDatabase
+    private let db: TidesDatabase
     private let api: APIClient
 
     public enum SyncState: Sendable {
@@ -16,7 +16,7 @@ public actor CarnivalSyncService {
 
     public private(set) var state: SyncState = .idle
 
-    public init(db: ShoreDatabase, api: APIClient) {
+    public init(db: TidesDatabase, api: APIClient) {
         self.db = db
         self.api = api
     }

@@ -2,7 +2,7 @@ import SwiftUI
 import ShoreKit
 
 @main
-struct ShoreRecorderApp: App {
+struct TidesRecorderApp: App {
     @State private var appState = AppState()
 
     var body: some Scene {
@@ -15,7 +15,7 @@ struct ShoreRecorderApp: App {
 
 @Observable
 final class AppState {
-    let db: ShoreDatabase
+    let db: TidesDatabase
     let api: APIClient
     let sync: SyncService
     let carnivalSync: CarnivalSyncService
@@ -26,8 +26,8 @@ final class AppState {
     init() {
         let dbPath = FileManager.default
             .urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("shore.sqlite").path
-        db = try! ShoreDatabase(path: dbPath)
+            .appendingPathComponent("tides.sqlite").path
+        db = try! TidesDatabase(path: dbPath)
         api = APIClient(baseURL: URL(string: "http://localhost:5266")!)
         sync = SyncService(db: db, api: api)
         carnivalSync = CarnivalSyncService(db: db, api: api)
